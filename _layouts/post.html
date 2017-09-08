@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{{page.title}}</title>
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Exo+2">
+
+  <style type="text/css">
+    html {
+      box-sizing: border-box;
+    }
+
+    html *,
+    html *::before,
+    html *::after {
+      box-sizing: inherit;
+    }
+
+    body {
+      align-items: center;
+      background-color: {{page.color}};
+      display: flex;
+      flex-direction: column;
+      font-family: 'Exo 2', sans-serif;
+      height: 100vh;
+      justify-content: space-between;
+      margin: 0;
+      width: 100vw;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .gen-hide {
+      display: none !important;
+    }
+
+    .gen-container,
+    .gen-button,
+    .gen-input {
+      background-color: white;
+      border: 3px solid #b9c1ca;
+      border-radius: 3px;
+      box-shadow: 0 0 4px rgba(0, 0, 0, .37);
+      color: #444444;
+      font-size: 16px;
+      line-height: 18px;
+      height: 38px;
+      outline: none;
+      padding: 4px 8px;
+      transition: all 160ms ease-in-out;
+    }
+
+    .gen-range {
+      background-color: transparent;
+      border: none;
+      box-shadow: none;
+      cursor: pointer;
+      height: auto;
+      margin: 8px 0 16px;
+      -webkit-appearance: none;
+    }
+
+    .gen-range::-webkit-slider-thumb {
+      -webkit-appearance: none;
+    }
+
+    .gen-range:focus {
+      outline: none;
+    }
+
+    .gen-range::-webkit-slider-thumb {
+      background-color: #4ade5e;
+      border: 2px solid rgba(0, 0, 0, .2);
+      border-radius: 50%;
+      cursor: pointer;
+      height: 24px;
+      width: 24px;
+      -webkit-appearance: none;
+    }
+
+    .gen-range::-webkit-slider-thumb:hover {
+      border-color: rgba(0, 0, 0, .3);
+    }
+
+    .gen-range::-webkit-slider-thumb:focus,
+    .gen-range::-webkit-slider-thumb:active {
+      border-color: rgba(0, 0, 0, .5);
+    }
+
+    .gen-range::-webkit-slider-runnable-track {
+      background-color: transparent;
+      border-bottom: 2px solid rgba(222, 74, 183, .7);
+      cursor: pointer;
+      height: 14px;
+      width: 100%;
+    }
+
+    .gen-input,
+    .gen-range {
+      min-width: 200px;
+    }
+
+    .gen-input:focus {
+      border-color: #00aaff;
+    }
+
+    .gen-button {
+      cursor: pointer;
+    }
+
+    .gen-button + .gen-button {
+      margin-left: 16px;
+    }
+
+    .gen-button:active {
+      border-color: #00aaff;
+    }
+
+    .gen-button:disabled {
+      pointer-events: none;
+    }
+
+    .gen-button-box {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .gen-container {
+      font-size: 28px;
+      line-height: 32px;
+      height: 320px;
+      margin-top: 16px;
+      max-width: 920px;
+      min-width: 380px;
+      overflow-x: hidden;
+      overflow-y: auto;
+      padding: 8px 16px;
+      white-space: pre-wrap;
+      width: 75%;
+      word-break: break-all;
+    }
+
+    .gen-container:not(:empty) {
+      border-color: #b400ff;
+    }
+
+    .gen-canvas {
+      background-color: white;
+      border: 3px solid #b400ff;
+      border-radius: 3px;
+      box-shadow: 0 0 4px rgba(0, 0, 0, .37);
+      height: 320px;
+      margin-top: 16px;
+      max-width: 920px;
+      min-width: 380px;
+      width: 75%;
+    }
+  </style>
+</head>
+<body>
+  {{content}}
+</body>
+</html>

@@ -1,0 +1,56 @@
+---
+layout: post
+title: "Markdown Preview"
+color: "#f57f17"
+description: "Live Markdown Preview."
+---
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.0/codemirror.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.0/theme/monokai.min.css">
+
+<style type="text/css">
+  body {
+    flex-direction: row;
+  }
+
+  .CodeMirror {
+    height: 100%;
+  }
+
+  .gen-square {
+    height: 100%;
+    width: 50%;
+  }
+
+  #render {
+    background-color: white;
+    padding: 8px 16px;
+  }
+</style>
+
+<div class="gen-square"><textarea></textarea></div>
+<div class="gen-square" id="render"></div>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.0/codemirror.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.0/mode/markdown/markdown.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.6/marked.min.js"></script>
+
+<script type="text/javascript">
+  (function(window) {
+    const textarea = document.querySelector('textarea')
+    const render = document.getElementById('render')
+
+    const mirror = window.CodeMirror.fromTextArea(textarea, {
+      styleActiveLine: true,
+      lineNumbers: true,
+      theme: 'monokai',
+      mode: 'markdown',
+      tabSize: 2
+    })
+
+    mirror.on('change', (instance, change) => {
+      render.innerHTML = window.marked(mirror.getValue())
+    })
+
+    mirror.setValue('## Enter Some Fancy Markdown')
+  })(window)
+</script>

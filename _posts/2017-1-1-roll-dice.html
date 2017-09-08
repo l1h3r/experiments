@@ -1,0 +1,87 @@
+---
+layout: post
+title: "Roll Dice"
+color: "#bf360c"
+description: "Dice. Click To Re-Roll."
+---
+<style type="text/css">
+  body {
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .rd-die {
+    background-color: white;
+    border: 1px solid #444444;
+    border-radius: 10px;
+    box-shadow: 0 3px 0 #cccccc, 0 4px 1px #444444;
+    cursor: pointer;
+    height: 50px;
+    position: relative;
+    width: 50px;
+  }
+
+  .rd-die + .rd-die {
+    margin-left: 16px;
+  }
+
+  .rd-die::after {
+    content: '';
+    background-color: black;
+    border-radius: 50%;
+    left: 50%;
+    height: 8px;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+  }
+
+  .rd-die[data-die="2"]::after {
+    background-color: white;
+    box-shadow: -12px -12px 0 black, 12px 12px 0 black;
+  }
+
+  .rd-die[data-die="3"]::after {
+    box-shadow: -12px -12px 0 black, 12px 12px 0 black;
+  }
+
+  .rd-die[data-die="4"]::after {
+    background-color: white;
+    box-shadow: -12px -12px 0 black, 12px 12px 0 black, -12px 12px 0 black, 12px -12px 0 black;
+  }
+
+  .rd-die[data-die="5"]::after {
+    background-color: white;
+    box-shadow: -12px -12px 0 black, 12px 12px 0 black, -12px 12px 0 black, 12px -12px 0 black;
+  }
+
+  .rd-die[data-die="6"]::after {
+    background-color: white;
+    box-shadow: -12px -12px 0 black, -12px 0 0 black, -12px 12px 0 black, 12px -12px 0 black, 12px 0 0 black, 12px 12px 0 black;
+  }
+</style>
+
+<div class="rd-die"></div>
+<div class="rd-die"></div>
+
+<script type="text/javascript">
+  (function(window) {
+    const dice = document.querySelectorAll('.rd-die')
+
+    const roll = () => {
+      for (let die of dice) {
+        die.setAttribute('data-die', Math.floor(Math.random() * 6) + 1)
+      }
+    }
+
+    for (let die of dice) {
+      die.addEventListener('click', (event) => {
+        event.preventDefault()
+        roll()
+      })
+    }
+
+    roll()
+  })(window)
+</script>

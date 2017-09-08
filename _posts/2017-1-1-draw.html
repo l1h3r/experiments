@@ -1,0 +1,115 @@
+---
+layout: post
+title: "Draw"
+color: "#827717"
+description: "Canvas Paint."
+---
+<style type="text/css">
+  body {
+    justify-content: center;
+  }
+
+  .gen-input {
+    margin-right: 16px;
+    min-width: auto;
+    text-align: center;
+  }
+
+  .gen-canvas {
+    border: none;
+    border-radius: 0;
+    cursor: default;
+    height: calc(100% - 70px);
+    margin-bottom: 16px;
+    margin-top: 0;
+    max-width: 100%;
+    min-width: 100%;
+  }
+</style>
+
+<canvas class="gen-canvas"></canvas>
+
+<div class="gen-button-box">
+  <button class="gen-button" onclick="paint.brush(4)">4</button>
+  <button class="gen-button" onclick="paint.brush(6)">6</button>
+  <button class="gen-button" onclick="paint.brush(8)">8</button>
+  <button class="gen-button" onclick="paint.brush(10)">10</button>
+  <button class="gen-button" onclick="paint.brush(16)">16</button>
+  <button class="gen-button" onclick="paint.brush(24)">24</button>
+  <button class="gen-button" onclick="paint.brush(38)">38</button>
+  <button class="gen-button" onclick="paint.brush(50)">50</button>
+
+  <button class="gen-button" onclick="paint.color('red')" style="color: red">Red</button>
+  <button class="gen-button" onclick="paint.color('blue')" style="color: blue">Blue</button>
+  <button class="gen-button" onclick="paint.color('green')" style="color: green">Green</button>
+  <button class="gen-button" onclick="paint.color('white')" style="background: black;color: white">White</button>
+  <button class="gen-button" onclick="paint.color('black')" style="color: black">Black</button>
+  <button class="gen-button" onclick="paint.clear()">Erase</button>
+</div>
+
+<script type="text/javascript">
+  (function(window) {
+    const canvas = document.querySelector('canvas')
+    const context = canvas.getContext('2d')
+
+    const paint = {
+      _color: 'black',
+      _brush: 6,
+      _draw: false,
+      _currentX: 0,
+      _currentY: 0,
+      _previousX: 0,
+      _previousY: 0,
+      mouse: function(x, y) {
+        paint._previousX = paint._currentX
+        paint._previousY = paint._currentY
+        paint._currentX = x - canvas.offsetLeft
+        paint._currentY = y - canvas.offsetTop
+      },
+      draw: function() {
+        if (!paint._draw) { return }
+        context.fillStyle = paint._color
+        context.beginPath()
+        context.moveTo(paint._currentX, paint._currentY)
+        context.arc(paint._currentX, paint._currentY, paint._brush, 0, Math.PI * 2, false)
+        context.fill()
+      },
+      resize: function() {
+        canvas.height = canvas.offsetHeight
+        canvas.width = canvas.offsetWidth
+      },
+      brush: function(brush) {
+        paint._brush = brush
+      },
+      color: function(color) {
+        paint._color = color
+      },
+      clear: function() {
+        context.clearRect(0, 0, canvas.width, canvas.height)
+      }
+    }
+
+    canvas.addEventListener('mousemove', (event) => {
+      paint.mouse(event.clientX, event.clientY)
+      paint.draw()
+    })
+
+    canvas.addEventListener('mousedown', (event) => {
+      paint._draw = true
+      paint.mouse(event.clientX, event.clientY)
+      paint.draw()
+    })
+
+    document.addEventListener('mouseup', (event) => {
+      paint._draw = false
+    })
+
+    window.addEventListener('resize', (event) => {
+      paint.resize()
+    })
+
+    paint.resize()
+
+    window.paint = paint
+  })(window)
+</script>

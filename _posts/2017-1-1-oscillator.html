@@ -1,0 +1,137 @@
+---
+layout: post
+title: "Oscillator"
+color: "#311b92"
+description: "Simple Tone Generator."
+---
+<style type="text/css">
+  label {
+    align-self: center;
+    color: white;
+    flex-basis: 80px;
+    margin-right: 16px;
+  }
+
+  .gen-container {
+    height: 80px;
+    margin-bottom: auto;
+  }
+
+  .gen-button-box {
+    flex-wrap: wrap;
+    margin-top: auto;
+    width: 700px;
+  }
+
+  .gen-button-box + .gen-button-box {
+    margin-top: 0;
+  }
+
+  .gen-button-box + .gen-button-box + .gen-button-box {
+    margin-bottom: auto;
+  }
+
+  .gen-range {
+    width: 420px;
+  }
+
+  .gen-input {
+    margin-left: 16px;
+  }
+
+  .tg-volume .gen-input,
+  .tg-frequency .gen-input {
+    min-width: auto;
+    text-align: center;
+    width: 80px;
+  }
+</style>
+
+<div class="gen-button-box">
+  <button class="gen-button">Play</button>
+  <select class="gen-input">
+    <option value="sine">Sine</option>
+    <option value="square">Square</option>
+    <option value="sawtooth">Sawtooth</option>
+    <option value="triangle">Triangle</option>
+  </select>
+</div>
+
+<div class="gen-button-box tg-volume">
+  <label>Volume</label>
+  <input type="range" class="gen-range" value="15" min="0" max="100" step="5">
+  <input type="text" class="gen-input" disabled>
+</div>
+
+<div class="gen-button-box tg-frequency">
+  <label>Frequency</label>
+  <input type="range" class="gen-range" value="1000" min="0" max="20000" step="10">
+  <input type="text" class="gen-input" disabled>
+</div>
+
+<script type="text/javascript">
+  (function(window) {
+    const type = document.querySelector('select.gen-input')
+    const volume = document.querySelector('.tg-volume .gen-range')
+    const inputV = document.querySelector('.tg-volume .gen-input')
+    const inputF = document.querySelector('.tg-frequency .gen-input')
+    const frequency = document.querySelector('.tg-frequency .gen-range')
+
+    const button = document.querySelector('.gen-button')
+    const container = document.querySelector('.gen-container')
+
+    const context = new AudioContext()
+
+    const gain = context.createGain()
+    const oscillator = context.createOscillator()
+
+    const setFrequency = (value) => {
+      inputF.value = value
+      oscillator.frequency.value = parseInt(value)
+    }
+
+    const setVolume = (value) => {
+      inputV.value = value
+      gain.gain.value = parseInt(value) / 100
+    }
+
+    const setType = (value) => {
+      oscillator.type = value
+    }
+
+    oscillator.connect(gain)
+    oscillator.start()
+
+    setFrequency(frequency.value)
+    setVolume(volume.value)
+    setType(type.value)
+
+    var playing = false
+
+    frequency.addEventListener('input', (event) => {
+      setFrequency(frequency.value)
+    })
+
+    volume.addEventListener('input', (event) => {
+      setVolume(volume.value)
+    })
+
+    type.addEventListener('change', (event) => {
+      setType(type.value)
+    })
+
+    button.onclick = (event) => {
+      event.preventDefault()
+
+      if (playing) {
+        playing = false
+        button.textContent = 'Play'
+        gain.disconnect(context.destination)
+      } else {
+        playing = true
+        button.textContent = 'Pause'
+        gain.connect(context.destination)
+      }
+    }
+  })(window)
+</script>

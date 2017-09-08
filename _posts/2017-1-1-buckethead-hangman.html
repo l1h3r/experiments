@@ -1,0 +1,309 @@
+---
+layout: post
+title: "Buckethead Hangman"
+color: "#4a148c"
+description: "Hangman With Buckethead."
+---
+<style type="text/css">
+  .hm-matches {
+    display: flex;
+  }
+
+  .hm-matches div {
+    border-bottom: 3px solid transparent;
+    color: white;
+    font-size: 22px;
+    line-height: 34px;
+    min-height: 38px;
+    text-align: center;
+    width: 24px;
+  }
+
+  .hm-matches div:empty {
+    border-bottom-color: white;
+  }
+
+  .hm-matches div + div {
+    margin-left: 8px;
+  }
+
+  .gen-button[data-match="true"] {
+    border-color: #46d61f;
+  }
+
+  .gen-button[data-match="false"] {
+    border-color: #d61f1f;
+  }
+
+  .gen-container {
+    overflow: initial;
+    position: relative;
+  }
+
+  .hm-stand {
+    background-color: black;
+    bottom: 16px;
+    left: 16px;
+    position: absolute;
+  }
+
+  .hm-stand:nth-child(1) {
+    height: 3px;
+    width: 380px;
+  }
+
+  .hm-stand:nth-child(2) {
+    height: 260px;
+    left: 32px;
+    width: 3px;
+  }
+
+  .hm-stand:nth-child(3) {
+    bottom: 270px;
+    height: 3px;
+    left: 24px;
+    width: 140px;
+  }
+
+  .hm-stand:nth-child(4) {
+    bottom: 248px;
+    height: 24px;
+    left: 140px;
+    width: 3px;
+  }
+
+  .hm-person__head {
+    background-color: white;
+    bottom: 226px;
+    border: 3px solid black;
+    border-radius: 50%;
+    height: 40px;
+    left: 136px;
+    position: absolute;
+    width: 40px;
+  }
+
+  .hm-person__eye {
+    left: 8px;
+    position: absolute;
+    top: 8px;
+  }
+
+  .hm-person__eye + .hm-person__eye {
+    left: auto;
+    right: 10px;
+  }
+
+  .hm-person__eye::before,
+  .hm-person__eye::after {
+    background-color: black;
+    content: '';
+    height: 8px;
+    position: absolute;
+    width: 2px;
+  }
+
+  .hm-person__eye::before {
+    transform: rotate(-45deg);
+  }
+
+  .hm-person__eye::after {
+    transform: rotate(45deg);
+  }
+
+  .hm-person__body {
+    background-color: black;
+    bottom: 180px;
+    height: 48px;
+    left: 154px;
+    position: absolute;
+    width: 3px;
+  }
+
+  .hm-person__arm {
+    background-color: black;
+    bottom: 195px;
+    height: 30px;
+    left: 154px;
+    position: absolute;
+    transform: rotate(45deg);
+    transform-origin: top;
+    width: 3px;
+  }
+
+  .hm-person__arm + .hm-person__arm {
+    transform: rotate(-45deg);
+  }
+
+  .hm-person__leg {
+    background-color: black;
+    bottom: 150px;
+    height: 30px;
+    left: 154px;
+    position: absolute;
+    transform: rotate(37deg);
+    transform-origin: top;
+    width: 3px;
+  }
+
+  .hm-person__leg + .hm-person__leg {
+    transform: rotate(-37deg);
+  }
+</style>
+
+<div class="gen-container"></div>
+
+<div class="hm-matches"></div>
+
+<div class="gen-button-box"></div>
+
+<script type="text/javascript">
+  (function(window) {
+    const matches = document.querySelector('.hm-matches')
+    const picture = document.querySelector('.gen-container')
+    const buttons = document.querySelector('.gen-button-box')
+
+    const initialState = () => {
+      const words = [
+        'giant robot',
+        'the day of the robot',
+        'colma',
+        'monsters and robots',
+        'bermuda triangle',
+        'electric tears',
+        'bucketheadland',
+        'population override',
+        'the cuckoo clocks of hell',
+        'enter the chicken',
+        'shadows between the sky',
+        'look up there',
+        'electric sea',
+        'forgotten library',
+        'the boiling pond',
+        'the spirit winds',
+        'the astrodome',
+        'it smells like frogs',
+        'twisterlend',
+        'you cant triple stamp a double stamp'
+      ]
+
+      const word = words[Math.floor(Math.random() * words.length)]
+
+      return {
+        lives: 10,
+        word: word,
+        guesses: [],
+        matches: word.split('').map((letter) => {
+          let accepted = false
+          let match = document.createElement('div')
+          matches.appendChild(match)
+
+          if ([' ', '-', '_'].includes(letter)) {
+            accepted = true
+            match.textContent = letter
+          }
+
+          return {
+            match: match,
+            letter: letter,
+            accepted: accepted
+          }
+        }),
+        scenes: [
+          { type: 'hm-stand' },
+          { type: 'hm-stand' },
+          { type: 'hm-stand' },
+          { type: 'hm-stand' },
+          { type: 'hm-person__head', children: ['hm-person__eye', 'hm-person__eye'] },
+          { type: 'hm-person__body' },
+          { type: 'hm-person__arm' },
+          { type: 'hm-person__arm' },
+          { type: 'hm-person__leg' },
+          { type: 'hm-person__leg' }
+        ]
+      }
+    }
+
+    const insertScene = (state) => {
+      let scene = state.scenes.shift()
+
+      if (scene) {
+        let piece = document.createElement('div')
+        piece.setAttribute('class', scene.type)
+        if (scene.children) {
+          for (let child of scene.children) {
+            let p = document.createElement('div')
+            p.setAttribute('class', child)
+            piece.appendChild(p)
+          }
+        }
+        picture.appendChild(piece)
+        return true
+      }
+
+      return false
+    }
+
+    const setMatch = (letter, state) => {
+      state.guesses.push(letter)
+
+      if (state.word.includes(letter)) {
+        for (let data of state.matches) {
+          if (letter === data.letter) {
+            data.accepted = true
+            data.match.textContent = data.letter.toUpperCase()
+          }
+        }
+        return true
+      }
+      return false
+    }
+
+    const play = (message = null) => {
+      if (message) { alert(message) }
+
+      buttons.innerHTML = ''
+      picture.innerHTML = ''
+      matches.innerHTML = ''
+
+      const state = initialState()
+
+      for (let letter of ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']) {
+        ((guess) => {
+          const button = document.createElement('button')
+
+          button.setAttribute('class', 'gen-button')
+          button.textContent = guess.toUpperCase()
+
+          buttons.appendChild(button)
+
+          button.onclick = (event) => {
+            event.preventDefault()
+            button.setAttribute('disabled', true)
+
+            if (state.lives <= 0) { return }
+            if (state.guesses.includes(guess)) { return }
+
+            let match = setMatch(guess, state)
+            button.setAttribute('data-match', match)
+
+            if (match) {
+              let remaining = state.matches.filter((data) => { return !data.accepted })
+              if (remaining.length === 0) {
+                setTimeout(play, 50, 'Congrats! You Won.')
+              }
+            } else {
+              insertScene(state)
+              state.lives--
+              if (state.lives === 0) {
+                setTimeout(play, 50, 'Gameover! You Should Practice.')
+              }
+            }
+          }
+        })(letter)
+      }
+    }
+
+    play()
+  })(window)
+</script>

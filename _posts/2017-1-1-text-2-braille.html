@@ -1,0 +1,36 @@
+---
+layout: post
+color: "#b71c1c"
+title: "Text 2 Braille"
+description: "Text To Braille As You Type."
+---
+<style type="text/css">
+  .gen-input {
+    height: 60px;
+    margin-bottom: 16px;
+    max-width: 920px;
+    min-width: 380px;
+    width: 75%;
+  }
+</style>
+
+<div class="gen-container"></div>
+
+<textarea class="gen-input" placeholder="Content Here..."></textarea>
+
+<script type="text/javascript">
+  (function(window) {
+    const map = { 'a': '⠁', 'b': '⠃', 'c': '⠉', 'd': '⠙', 'e': '⠑', 'f': '⠋', 'g': '⠛', 'h': '⠓', 'i': '⠊', 'j': '⠚', 'k': '⠅', 'l': '⠇', 'm': '⠍', 'n': '⠝', 'o': '⠕', 'p': '⠏', 'q': '⠟', 'r': '⠗', 's': '⠎', 't': '⠞', 'u': '⠥', 'v': '⠧', 'w': '⠺', 'x': '⠭', 'y': '⠽', 'z': '⠵', '0': '⠴', '1': '⠂', '2': '⠆', '3': '⠒', '4': '⠲', '5': '⠢', '': '\t', '\n': '\n' }
+
+    const input = document.querySelector('.gen-input')
+    const output = document.querySelector('.gen-container')
+
+    input.focus()
+
+    input.addEventListener('keyup', (event) => {
+      output.textContent = (event.target.value || '').trim().split('').map((char) => {
+        return map[char] || ''
+      }).join('')
+    })
+  })(window)
+</script>

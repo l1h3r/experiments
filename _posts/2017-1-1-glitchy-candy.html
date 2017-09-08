@@ -1,0 +1,138 @@
+---
+layout: post
+title: "Glitchy Candy"
+color: "#1a237e"
+description: "Candy. Moving Candy."
+---
+<style type="text/css">
+  body {
+    justify-content: center;
+  }
+
+  #shru {
+    display: flex;
+    flex-wrap: wrap;
+    height: 100%;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  #shru div {
+    border: 1px solid black;
+    border-radius: 50%;
+    height: 40px;
+    position: relative;
+    width: 40px;
+  }
+
+  #shru div::after {
+    content: 'M';
+    color: white;
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+</style>
+
+<div id="shru"></div>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.0.2/anime.min.js"></script>
+
+<script type="text/javascript">
+  (function(window) {
+    const config = {
+      colors: [ // http://clrs.cc/
+        '#001f3f',
+        '#0074d9',
+        '#7fdbff',
+        '#39cccc',
+        '#3d9970',
+        '#2ecc40',
+        '#01ff70',
+        '#ffdc00',
+        '#ff851b',
+        '#ff4136',
+        '#85144b',
+        '#f012be',
+        '#b10dc9',
+        '#111111',
+        '#aaaaaa',
+        '#dddddd'
+      ],
+      nodes: 420,
+      duration: 1800
+    }
+
+    const shru = document.getElementById('shru')
+    var taken = {}
+
+    for (var i = 0; i < config.nodes; i++) {
+      let node = document.createElement('div')
+      node.style.background = config.colors[anime.random(0, config.colors.length - 1)]
+      node.style.order = order()
+      shru.appendChild(node)
+    }
+
+    function order() {
+      let num = anime.random(1, config.nodes)
+      if (taken[num]) { return order() }
+      taken[num] = true
+      return num
+    }
+
+    function translateStep(index, op) {
+      return {
+        easing: 'easeInOutBack',
+        value: function() {
+          return [0, anime.random(0, Math[op](Math.random() * Math.PI * 2) * 150)]
+        },
+        duration: function() {
+          return config.duration / anime.random(2, 4)
+        },
+        delay: function(_target, index, targets) {
+          if (index === 0) {
+            return 0
+          }
+          return (config.duration / targets) * (index + 1)
+        }
+      }
+    }
+
+    anime({
+      translateX: [
+        translateStep(0, 'cos'),
+        translateStep(1, 'cos'),
+        translateStep(2, 'cos')
+      ],
+      translateY: [
+        translateStep(0, 'sin'),
+        translateStep(1, 'sin'),
+        translateStep(2, 'sin')
+      ],
+      scale: [
+        {
+          duration: function(_target, index, _targets) {
+            return config.duration / ((index + 10) * 100 / config.duration)
+          },
+          value: function() {
+            return [1, anime.random(4, 8) / 10, 1]
+          }
+        }
+      ],
+      rotate: function() {
+        return anime.random(-360, 360)
+      },
+      delay: function(_target, index, targets) {
+        return (config.duration / targets) * (index + 1)
+      },
+      elasticity: function(_target, index, targets) {
+        return (targets - (index + 1)) * 250
+      },
+      easing: 'easeInOutExpo',
+      direction: 'alternate',
+      targets: '#shru div',
+      loop: true
+    })
+  })(window)
+</script>

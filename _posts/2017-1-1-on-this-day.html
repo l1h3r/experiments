@@ -1,0 +1,127 @@
+---
+layout: post
+title: "On This Day (Or That Day)"
+color: "#ff6f00"
+description: "Notable Events On A Certain Day."
+---
+<style type="text/css">
+  .gen-container {
+    align-content: flex-start;
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 14px;
+    height: 100%;
+    justify-content: flex-start;
+    line-height: 18px;
+    margin: 16px 0;
+    max-width: calc(100% - 32px);
+    width: 100%;
+  }
+
+  .gen-container li {
+    list-style-type: none;
+    margin-bottom: 8px;
+    width: 100%;
+  }
+
+  .gen-button,
+  .gen-input + .gen-input {
+    margin-left: 16px;
+  }
+</style>
+
+<div class="gen-container"></div>
+
+<form class="gen-button-box">
+  <select class="gen-input otd-days"></select>
+  <select class="gen-input otd-months"></select>
+
+  <input type="submit" class="gen-button" value="Fetch">
+</form>
+
+<script type="text/javascript">
+  (function(window) {
+    const form = document.querySelector('form')
+    const days = document.querySelector('.otd-days')
+    const months = document.querySelector('.otd-months')
+    const container = document.querySelector('.gen-container')
+
+    const monthCol = {
+      0: 'January',
+      1: 'February',
+      2: 'March',
+      3: 'April',
+      4: 'May',
+      5: 'June',
+      6: 'July',
+      7: 'August',
+      8: 'September',
+      9: 'October',
+      10: 'November',
+      11: 'December'
+    }
+
+    const setDays = (month, year) => {
+      const dayCol = new Array(32 - new Date(year, month, 32).getDate())
+
+      days.innerHTML = ''
+
+      for (let [index, _] of dayCol.entries()) {
+        let option = document.createElement('option')
+        option.textContent = index + 1
+        days.appendChild(option)
+      }
+    }
+
+    const today = new Date()
+    setDays(today.getMonth(), today.getYear())
+
+    for (let key in monthCol) {
+      let option = document.createElement('option')
+      option.textContent = monthCol[key]
+      months.appendChild(option)
+    }
+
+    days.value = today.getDate()
+    months.value = monthCol[today.getMonth()]
+
+    months.addEventListener('change', (event) => {
+      for (let key in monthCol) {
+        if (months.value === monthCol[key]) {
+          setDays(key, today.getYear())
+          break
+        }
+      }
+    })
+
+    window.callback = function(data) {
+      if (data.error) {
+        return alert('You Done Broke It!')
+      }
+
+      let content = data.parse.text['*']
+
+      content = content.split('<ul>')[1] // Trim before the event list
+      content = content.split('</ul>')[0] // Trim after the event list
+      content = content.replace(/\/wiki/g, 'https://en.wikipedia.org/wiki') // Re-write broken URLs
+      content = content.split('</li>').reverse().join('</li>') // Reverse the list
+
+      container.innerHTML = content
+    }
+
+    const fetchWikipedia = () => {
+      const url = `https://en.wikipedia.org/w/api.php?format=json&action=parse&page=${months.value}_${days.value}&prop=text&section=1&callback=callback`
+      const script = document.createElement('script')
+
+      script.setAttribute('src', url)
+      document.head.appendChild(script)
+    }
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault()
+      fetchWikipedia()
+    })
+
+    fetchWikipedia()
+  })(window)
+</script>

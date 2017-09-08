@@ -1,0 +1,123 @@
+---
+layout: post
+title: "Absolutely Horrible"
+color: "#006064"
+description: "Click To Start. Click To Stop. Warning: Flashing Lights"
+---
+<style type="text/css">
+  body {
+    justify-content: center;
+  }
+
+  body.is-alarming {
+    animation: blink 200ms infinite;
+    background-color: #ff0000;
+  }
+
+  .gen-button {
+    border-radius: 50%;
+    height: 60px;
+    position: absolute;
+    transition: none;
+    width: 60px;
+  }
+
+  @keyframes blink {
+    from {
+      background-color: #ff0000;
+    }
+    50% {
+      background-color: #aa0000;
+    }
+    to {
+      background-color: #ff0000;
+    }
+  }
+</style>
+
+<button class="gen-button">Click Me!</button>
+<audio class="gen-hide" preload="auto" src="/assets/the-most-horrible-thing-ever.mp3"></audio>
+
+<script type="text/javascript">
+  (function(window) {
+    const button = document.querySelector('.gen-button')
+    const audio = document.querySelector('audio')
+
+    const messages = [
+      'A wise man once said - life is not so straight-forward',
+      'One more time. You\'re almost there.'
+    ]
+
+    const evadeMouse = (element) => {
+      let rect = element.getBoundingClientRect()
+
+      let offset = {
+        left: rect.left,
+        top: rect.top
+      }
+
+      let distanceX = mouse.x - offset.left
+      let distanceY = mouse.y - offset.top
+
+      let distance = Math.sqrt((distanceX * distanceX) + (distanceY * distanceY))
+      let magnet = 2600 - distance
+
+      let powerX = offset.left - (distanceX / distance) * magnet / distance
+      let powerY = offset.top - (distanceY / distance) * magnet / distance
+
+      forceX = (forceX + (position.left - offset.left) / 2) / 2.1
+      forceY = (forceY + (position.top - offset.top) / 2) / 2.1
+
+      element.style.left = `${Math.round(powerX + forceX)}px`
+      element.style.top = `${Math.round(powerY + forceY)}px`
+    }
+
+    var forceX = 0
+    var forceY = 0
+    var position = {}
+    var evading = false
+
+    button.onclick = (event) => {
+      event.preventDefault()
+
+      if (evading) {
+        event.preventDefault()
+        let message = messages.shift()
+        if (message) {
+          alert(message)
+        } else {
+          document.body.classList.remove('is-alarming')
+          evading = false
+          audio.pause()
+        }
+      } else {
+        evading = true
+
+        document.body.classList.add('is-alarming')
+
+        audio.play()
+        audio.addEventListener('ended', (event) => { audio.play() })
+
+        position = {
+          left: button.offsetLeft,
+          top: button.offsetTop
+        }
+
+        evadeMouse(button)
+      }
+    }
+
+    var mouse = {
+      x: 0,
+      y: 0
+    }
+
+    document.addEventListener('mousemove', (event) => {
+      mouse.x = event.clientX
+      mouse.y = event.clientY
+      if (evading) {
+        evadeMouse(button)
+      }
+    })
+  })(window)
+</script>

@@ -1,0 +1,92 @@
+---
+layout: post
+title: "Current Weather"
+color: "#004d40"
+description: "Obligatory Weather App."
+---
+<style type="text/css">
+  .gen-button {
+    margin-left: 16px;
+  }
+
+  .cw-weather {
+    align-items: center;
+    background-color: rgba(0, 0, 0, .37);
+    border: 3px solid white;
+    border-radius: 50%;
+    display: flex;
+    font-size: 56px;
+    height: 240px;
+    justify-content: center;
+    line-height: 60px;
+    margin: auto;
+    position: relative;
+    transition: all 80ms ease-in-out;
+    width: 240px;
+  }
+
+  .cw-weather::after {
+    content: attr(data-desc);
+    font-size: 18px;
+    height: 60px;
+    left: 50%;
+    position: absolute;
+    text-align: center;
+    top: calc(100% / 1.6);
+    transform: translateX(-50%);
+    width: 100%;
+  }
+</style>
+
+<div class="cw-weather">0°C</div>
+
+<form class="gen-button-box">
+  <input type="text" class="gen-input" placeholder="Enter City...">
+  <input type="submit" class="gen-button" value="Check Weather">
+</form>
+
+<script type="text/javascript">
+  (function(window) {
+    const colors = [
+      '#0074b2',
+      '#0091ba',
+      '#0091ba',
+      '#04bacc',
+      '#29c78f',
+      '#7cca52',
+      '#e3d140',
+      '#e3d140',
+      '#e5a339',
+      '#e87335',
+      '#c02d36',
+      '#a40a31'
+    ]
+
+    const form = document.querySelector('.gen-button-box')
+    const input = document.querySelector('.gen-input')
+    const output = document.querySelector('.cw-weather')
+
+    input.focus()
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault()
+
+      const query = (input.value || '').trim()
+
+      if (query.length === 0) {
+        return alert('Nothing has no weather.')
+      }
+
+      fetch(`http://api.openweathermap.org/data/2.5/weather?q=${query}&units=metric&APPID=8e49849d35ea33e9f6d8fd912de6ac51`).then((response) => {
+        response.json().then((data) => {
+          const temp = Math.round(data.main.temp)
+
+          output.textContent = `${temp}°C`
+          output.setAttribute('data-desc', data.weather[0].description)
+
+          output.style.backgroundColor = colors[Math.min(12, Math.max(0, Math.floor(temp / 3)))]
+        })
+      })
+    })
+  })(window)
+</script>
