@@ -15,7 +15,7 @@ layout: null
   <div class="experiments">
     {% for post in site.posts %}
       <div class="experiment">
-        <a href="{{site.baseurl}}{{post.url}}">{{post.title}}</a>
+        <a href="{{site.github.url}}{{post.url}}">{{post.title}}</a>
         <div class="experiment__description">{{post.description}}</div>
       </div>
     {% endfor %}
